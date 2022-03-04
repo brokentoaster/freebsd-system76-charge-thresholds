@@ -1,0 +1,49 @@
+#!/bin/sh
+
+# sudp pkg install sysutils/acpi_call
+# sudo kldload acpi_call.ko
+
+# PROVIDE: s76_charge_thresholds
+# REQUIRE: FILESYSTEMS sysctl kld acpi_call
+# BEFORE: LOGIN
+# KEYWORD: nojail 
+
+. /etc/rc.subr 
+
+name="s76_charge_thresholds" 
+rcvar="s76_charge_thresholds_enable"
+
+start_cmd="${name}_start" 
+stop_cmd=":" 
+
+load_rc_config $name 
+: ${s76_charge_thresholds_enable:=no}
+: ${s76_charge_thresholds_stop_at:=80}
+: ${s76_charge_thresholds_start_at:=50}
+: ${s76_charge_thresholds_quiet:=no}
+
+s76_charge_thresholds_start() 
+{
+    echo "S76 Charge Thresholds set to ${s76_charge_thresholds_start_at} - ${s76_charge_thresholds_stop_at}"
+    
+    if ! checkyesno ${name}_quiet  ; then
+       # read current settings 
+       /usr/local/sbin/acpi_call -v -p '\_SB.PCI0.LPCB.EC0.GBCT' -i 1
+       /usr/local/sbin/acpi_call -v -p '\_SB.PCI0.LPCB.EC0.GBCT' -i 0
+    fi
+    
+    # set new levels
+    /usr/local/sbin/acpi_call -v -p '\_SB.PCI0.LPCB.EC0.SBCT' -i 1 -i ${s76_charge_thresholds_stop_at}
+    /usr/local/sbin/acpi_call -v -p '\_SB.PCI0.LPCB.EC0.SBCT' -i 0 -i ${s76_charge_thresholds_start_at}
+
+    if ! checkyesno ${name}_quiet  ; then
+       # read again to confirm change
+       /usr/local/sbin/acpi_call -v -p '\_SB.PCI0.LPCB.EC0.GBCT' -i 1
+       /usr/local/sbin/acpi_call -v -p '\_SB.PCI0.LPCB.EC0.GBCT' -i 0
+    fi
+
+}
+
+run_rc_command "$1" 
+
+
