@@ -11,7 +11,7 @@
 . /etc/rc.subr 
 
 name="s76_charge_thresholds" 
-rcvar="s76_charge_thresholds_enable"
+rcvar="${name}_enable"
 
 start_cmd="${name}_start" 
 stop_cmd=":" 
@@ -22,24 +22,26 @@ load_rc_config $name
 : ${s76_charge_thresholds_start_at:=50}
 : ${s76_charge_thresholds_quiet:=no}
 
+acpi_cmd=/usr/local/sbin/acpi_call -v -p
+
 s76_charge_thresholds_start() 
 {
     echo "S76 Charge Thresholds set to ${s76_charge_thresholds_start_at} - ${s76_charge_thresholds_stop_at}"
     
     if ! checkyesno ${name}_quiet  ; then
        # read current settings 
-       /usr/local/sbin/acpi_call -v -p '\_SB.PCI0.LPCB.EC0.GBCT' -i 1
-       /usr/local/sbin/acpi_call -v -p '\_SB.PCI0.LPCB.EC0.GBCT' -i 0
+       ${acpi_cmd} '\_SB.PCI0.LPCB.EC0.GBCT' -i 1
+       ${acpi_cmd} '\_SB.PCI0.LPCB.EC0.GBCT' -i 0
     fi
     
     # set new levels
-    /usr/local/sbin/acpi_call -v -p '\_SB.PCI0.LPCB.EC0.SBCT' -i 1 -i ${s76_charge_thresholds_stop_at}
-    /usr/local/sbin/acpi_call -v -p '\_SB.PCI0.LPCB.EC0.SBCT' -i 0 -i ${s76_charge_thresholds_start_at}
+    ${acpi_cmd} '\_SB.PCI0.LPCB.EC0.SBCT' -i 1 -i ${s76_charge_thresholds_stop_at}
+    ${acpi_cmd} '\_SB.PCI0.LPCB.EC0.SBCT' -i 0 -i ${s76_charge_thresholds_start_at}
 
     if ! checkyesno ${name}_quiet  ; then
        # read again to confirm change
-       /usr/local/sbin/acpi_call -v -p '\_SB.PCI0.LPCB.EC0.GBCT' -i 1
-       /usr/local/sbin/acpi_call -v -p '\_SB.PCI0.LPCB.EC0.GBCT' -i 0
+       ${acpi_cmd} '\_SB.PCI0.LPCB.EC0.GBCT' -i 1
+       ${acpi_cmd} '\_SB.PCI0.LPCB.EC0.GBCT' -i 0
     fi
 
 }
