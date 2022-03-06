@@ -19,25 +19,18 @@ load_rc_config $name
 : ${s76_charge_thresholds_start_at:=50}
 : ${s76_charge_thresholds_quiet:=no}
 
-if ! checkyesno ${name}_quiet  ; then
-    flag="-v"
-else 
-    flag=""
-fi 
+checkyesno ${name}_quiet || acpi_verbose_flag="-v"
 
-
-acpi_cmd_set="/usr/local/sbin/acpi_call ${flag} -p \_SB.PCI0.LPCB.EC0.SBCT"
-acpi_cmd_get="/usr/local/sbin/acpi_call ${flag} -p \_SB.PCI0.LPCB.EC0.GBCT"
-
+acpi_cmd_set="/usr/local/sbin/acpi_call ${acpi_verbose_flag} -p \_SB.PCI0.LPCB.EC0.SBCT"
+acpi_cmd_get="/usr/local/sbin/acpi_call ${acpi_verbose_flag} -p \_SB.PCI0.LPCB.EC0.GBCT"
 
 s76_ct_get_current()
 {
-    if ! checkyesno ${name}_quiet  ; then
+    if ! checkyesno ${name}_quiet ; then
        # read current settings 
        ${acpi_cmd_get}  -i 1
        ${acpi_cmd_get}  -i 0
     fi
-
 }
 
 s76_charge_thresholds_start() 
@@ -48,14 +41,11 @@ s76_charge_thresholds_start()
     s76_ct_get_current
     
     # set new levels
-    ${acpi_cmd_set}  -i 1 -i ${s76_charge_thresholds_stop_at}
-    ${acpi_cmd_set}  -i 0 -i ${s76_charge_thresholds_start_at}
+    ${acpi_cmd_set} -i 1 -i ${s76_charge_thresholds_stop_at}
+    ${acpi_cmd_set} -i 0 -i ${s76_charge_thresholds_start_at}
 
     # read again to confirm change
     s76_ct_get_current
-
 }
 
 run_rc_command "$1" 
-
-
