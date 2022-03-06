@@ -28,8 +28,8 @@ s76_ct_get_current()
 {
     if ! checkyesno ${name}_quiet ; then
        # read current settings 
-       ${acpi_cmd_get}  -i 1
-       ${acpi_cmd_get}  -i 0
+       ${acpi_cmd_get} -i 1
+       ${acpi_cmd_get} -i 0
     fi
 }
 
