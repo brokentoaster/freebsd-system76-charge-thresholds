@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# sudp pkg install sysutils/acpi_call
-# sudo kldload acpi_call.ko
-
 # PROVIDE: s76_charge_thresholds
 # REQUIRE: FILESYSTEMS sysctl kld acpi_call
 # BEFORE: LOGIN
@@ -22,27 +19,40 @@ load_rc_config $name
 : ${s76_charge_thresholds_start_at:=50}
 : ${s76_charge_thresholds_quiet:=no}
 
-acpi_cmd=/usr/local/sbin/acpi_call -v -p
+if ! checkyesno ${name}_quiet  ; then
+    flag="-v"
+else 
+    flag=""
+fi 
+
+
+acpi_cmd_set="/usr/local/sbin/acpi_call ${flag} -p \_SB.PCI0.LPCB.EC0.SBCT"
+acpi_cmd_get="/usr/local/sbin/acpi_call ${flag} -p \_SB.PCI0.LPCB.EC0.GBCT"
+
+
+s76_ct_get_current()
+{
+    if ! checkyesno ${name}_quiet  ; then
+       # read current settings 
+       ${acpi_cmd_get}  -i 1
+       ${acpi_cmd_get}  -i 0
+    fi
+
+}
 
 s76_charge_thresholds_start() 
 {
     echo "S76 Charge Thresholds set to ${s76_charge_thresholds_start_at} - ${s76_charge_thresholds_stop_at}"
-    
-    if ! checkyesno ${name}_quiet  ; then
-       # read current settings 
-       ${acpi_cmd} '\_SB.PCI0.LPCB.EC0.GBCT' -i 1
-       ${acpi_cmd} '\_SB.PCI0.LPCB.EC0.GBCT' -i 0
-    fi
+   
+    # read current settings 
+    s76_ct_get_current
     
     # set new levels
-    ${acpi_cmd} '\_SB.PCI0.LPCB.EC0.SBCT' -i 1 -i ${s76_charge_thresholds_stop_at}
-    ${acpi_cmd} '\_SB.PCI0.LPCB.EC0.SBCT' -i 0 -i ${s76_charge_thresholds_start_at}
+    ${acpi_cmd_set}  -i 1 -i ${s76_charge_thresholds_stop_at}
+    ${acpi_cmd_set}  -i 0 -i ${s76_charge_thresholds_start_at}
 
-    if ! checkyesno ${name}_quiet  ; then
-       # read again to confirm change
-       ${acpi_cmd} '\_SB.PCI0.LPCB.EC0.GBCT' -i 1
-       ${acpi_cmd} '\_SB.PCI0.LPCB.EC0.GBCT' -i 0
-    fi
+    # read again to confirm change
+    s76_ct_get_current
 
 }
 

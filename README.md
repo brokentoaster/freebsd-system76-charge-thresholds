@@ -6,4 +6,9 @@ This behaviour will maximize the long term battery lifetime at the cost of day t
 
 To install copy to `/usr/local/etc/rc.d/` and set `s76_charge_thresholds_enable=YES` in your rc.conf
 
-This requires the [sysutils/acpi_call](https://www.freshports.org/sysutils/acpi_call/) package/port to be inatalled.
+This requires the [sysutils/acpi_call](https://www.freshports.org/sysutils/acpi_call/) package/port to be installed.
+
+```
+# pkg install sysutils/acpi_call
+# kldload acpi_call.ko
+`
