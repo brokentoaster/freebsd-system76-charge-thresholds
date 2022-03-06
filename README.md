@@ -11,9 +11,9 @@ To install copy to `/usr/local/etc/rc.d/` and set `s76_charge_thresholds_enable=
 
 you can also tweak the following values in your `rc.conf`:
 
-`s76_charge_thresholds_stop_at` (0-100) percentage to stop charging at, default is 80.
-`s76_charge_thresholds_start_at` (0-100) percentage to start charging at, default is 50.
-`s76_charge_thresholds_quiet` (YES,NO) yes for less verbose output in the dmesg at startup, default is no.
+* `s76_charge_thresholds_stop_at` (0-100) percentage to stop charging at, default is 80.
+* `s76_charge_thresholds_start_at` (0-100) percentage to start charging at, default is 50.
+* `s76_charge_thresholds_quiet` (YES,NO) yes for less verbose output in the dmesg at startup, default is no.
 
 
 This requires the [sysutils/acpi_call](https://www.freshports.org/sysutils/acpi_call/) package/port to be installed.
@@ -29,6 +29,8 @@ The exact ACPI calls were revers engineered through reading
 and `acpidump -dt` which gives
 
 ```
+---8<--- snip  ---8<---
+
         Field (ERAM, ByteAcc, Lock, Preserve)
         {
             Offset (0xBC),
@@ -66,5 +68,5 @@ and `acpidump -dt` which gives
                 }
             }
         }
-
+---8<--- snip  ---8<---
 ```
