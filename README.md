@@ -70,3 +70,5 @@ and `acpidump -dt` which gives
         }
 ---8<--- snip  ---8<---
 ```
+
+I could have also inspected the changes to the original `ASL` file [here](https://github.com/system76/coreboot/pull/15/files)
