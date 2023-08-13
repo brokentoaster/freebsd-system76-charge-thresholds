@@ -23,7 +23,7 @@ This requires the [sysutils/acpi_call](https://www.freshports.org/sysutils/acpi_
 # kldload acpi_call.ko
 ```
 
-The exact ACPI calls were revers engineered through reading 
+The exact ACPI calls were reverse engineered through reading 
 [issue to add run time setting facility](https://github.com/system76/ec/issues/62) to the 
 [embedded Controller firmware](https://github.com/system76/ec/commit/dabda167426644f78404fa8f459ea366b3d6a804)
 and `acpidump -dt` which gives
